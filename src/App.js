@@ -1,6 +1,4 @@
-import './App.css';
 import { useState } from 'react';
-import { useEffect } from 'react';
 import SearchBar from './SearchBar';
 import PlayerProfile from './PlayerProfile'
 
@@ -34,31 +32,40 @@ function App() {
       fetchData(`https://api.chess.com/pub/player/${playerName}/games/archives`)
     ])
     .then(([profile, stats, gameArchives]) => {
-      if (gameArchives && gameArchives.length > 0) {
-        return [profile, stats, gameArchives, fetchData(gameArchives[gameArchives.length - 1])];
+      if (gameArchives && gameArchives.archives.length > 0) {
+        fetchData(gameArchives.archives[gameArchives.archives.length - 1])
+        .then(lastArchive => {
+          setPlayerData(prevData => ({
+            ...prevData,
+            profile: profile,
+            stats: stats,
+            gameArhives: gameArchives.archives,
+            lastArchive: lastArchive
+          }));
+        });
       }
       else {
-        return [profile, stats, gameArchives, null];
+        setPlayerData(prevData=> ({
+          ...prevData,
+          profile: null,
+          stats: null,
+          gameArchives: null,
+          lastArchive: null
+        }));
       }
-
-    })
-    .then(([profile, stats, gameArchives, lastArchive]) => {
-      setPlayerData(prevData => ({
-        ...prevData,
-        profile: profile,
-        stats: stats,
-        gameArchives: gameArchives,
-        lastArchive: lastArchive
-      }));
     });
   }
 
   return (
     <div className="App">
-      <h1> Chess Tracker </h1>
+      <h1 className="title"> Chess Tracker </h1>
       <SearchBar handleSearch={handleSearch}/>
       {playerData.profile != null &&
-        <PlayerProfile profile={playerData.profile} stats={playerData.stats} />
+        <PlayerProfile 
+          profile={playerData.profile} 
+          stats={playerData.stats} 
+          gameArchives={playerData.gameArchives}
+          lastArchive={playerData.lastArchive} />
       }
     </div>
   );
