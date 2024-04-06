@@ -58,9 +58,11 @@ function App() {
 
   return (
     <div className="App">
-      <h1 className="title"> Chess Tracker </h1>
-      <SearchBar handleSearch={handleSearch}/>
-      {playerData.profile != null &&
+      <div className="header">
+        <h1 className="title"> Chess Tracker </h1>
+        <SearchBar handleSearch={handleSearch}/>
+      </div>
+      {playerData.profile != null && playerData.stats != null &&
         <PlayerProfile 
           profile={playerData.profile} 
           stats={playerData.stats} 
